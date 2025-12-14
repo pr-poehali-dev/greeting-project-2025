@@ -15,8 +15,24 @@ const Index = () => {
   const referralLink = `${window.location.origin}/?ref=${userId}`;
 
   const generateSignal = () => {
-    const signal = (Math.random() * (90 - 1.01) + 1.01).toFixed(2);
-    setCurrentSignal(parseFloat(signal));
+    const rand = Math.random();
+    let signal;
+    
+    if (rand < 0.85) {
+      signal = (Math.random() * (20 - 1.01) + 1.01).toFixed(2);
+    } else {
+      signal = (Math.random() * (90 - 30) + 30).toFixed(2);
+    }
+    
+    setCurrentSignal(parseFloat(signal.replace(',', '.')));
+  };
+
+  const handleVipSignals = () => {
+    window.open('https://t.me/Lusky_bear_bot', '_blank');
+  };
+
+  const handleWithdraw = () => {
+    window.open('https://t.me/Lusky_bear_bot', '_blank');
   };
 
   const copyReferralLink = () => {
@@ -63,7 +79,7 @@ const Index = () => {
             </Button>
 
             <Button
-              onClick={() => setScreen('signals')}
+              onClick={handleVipSignals}
               size="lg"
               className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#9b87f5] border-2 border-[#9b87f5]/30 hover:border-[#9b87f5]/60 transition-all"
             >
@@ -172,7 +188,7 @@ const Index = () => {
               <div className="mb-6 sm:mb-8 p-6 sm:p-12 bg-black/60 rounded-lg border-2 border-[#FF10F0]/50">
                 <p className="text-lg sm:text-2xl mb-3 sm:mb-4 text-[#00F0FF]">Ваш сигнал:</p>
                 <p className="text-5xl sm:text-8xl font-black animate-pulse-glow" style={{ color: '#FF10F0', textShadow: '0 0 30px rgba(255, 16, 240, 0.5)' }}>
-                  {currentSignal}x
+                  {currentSignal.toString().replace('.', ',')}x
                 </p>
               </div>
             )}
@@ -207,13 +223,20 @@ const Index = () => {
           </Button>
 
           <Card className="bg-black/60 border border-[#FF10F0]/30 p-4 sm:p-8">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 sm:mb-8">
                 <div className="text-center sm:text-left">
                   <p className="text-xs sm:text-sm text-[#00F0FF] mb-1">Ваш баланс</p>
                   <p className="text-3xl sm:text-4xl font-black" style={{ color: '#FF10F0' }}>
                     {balance} ₽
                   </p>
                 </div>
+                <Button
+                  onClick={handleWithdraw}
+                  className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all px-6 py-2"
+                >
+                  <Icon name="Wallet" size={20} className="mr-2" />
+                  Вывести
+                </Button>
                 <div className="text-center sm:text-right">
                   <p className="text-xs sm:text-sm text-[#00F0FF] mb-1">Рефералов</p>
                   <p className="text-3xl sm:text-4xl font-black" style={{ color: '#00F0FF' }}>
