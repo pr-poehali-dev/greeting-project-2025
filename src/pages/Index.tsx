@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -12,19 +12,39 @@ const Index = () => {
   const [balance, setBalance] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
   const [userId] = useState(() => Math.random().toString(36).substring(2, 15));
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isWaiting, setIsWaiting] = useState(false);
   const referralLink = `${window.location.origin}/?ref=${userId}`;
 
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0 && isWaiting) {
+      setIsWaiting(false);
+    }
+  }, [timeLeft, isWaiting]);
+
   const generateSignal = () => {
-    const rand = Math.random();
+    if (isWaiting) {
+      toast.error(`Подождите ${timeLeft} секунд до следующего сигнала`);
+      return;
+    }
+
+    const rand = Math.random() * 100;
     let signal;
     
-    if (rand < 0.85) {
-      signal = (Math.random() * (20 - 1.01) + 1.01).toFixed(2);
+    if (rand < 1) {
+      signal = (Math.random() * (90 - 20) + 20).toFixed(2);
+    } else if (rand < 30) {
+      signal = (Math.random() * (20 - 10) + 10).toFixed(2);
     } else {
-      signal = (Math.random() * (90 - 30) + 30).toFixed(2);
+      signal = (Math.random() * (10 - 1.01) + 1.01).toFixed(2);
     }
     
     setCurrentSignal(parseFloat(signal.replace(',', '.')));
+    setIsWaiting(true);
+    setTimeLeft(60);
   };
 
   const handleVipSignals = () => {
@@ -193,13 +213,22 @@ const Index = () => {
               </div>
             )}
 
+            {isWaiting && (
+              <div className="mb-6 p-4 bg-black/40 rounded-lg border border-[#00F0FF]/30">
+                <p className="text-[#00F0FF] text-lg">
+                  ⏱️ Следующий сигнал через: <span className="font-bold text-[#FF10F0]">{timeLeft}с</span>
+                </p>
+              </div>
+            )}
+
             <Button
               onClick={generateSignal}
               size="lg"
-              className="h-16 sm:h-20 px-8 sm:px-12 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all w-full sm:w-auto"
+              disabled={isWaiting}
+              className="h-16 sm:h-20 px-8 sm:px-12 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Icon name="Zap" size={28} className="mr-2 sm:mr-3" />
-              {currentSignal === null ? 'Получить сигнал' : 'Следующий сигнал'}
+              {currentSignal === null ? 'Получить сигнал' : isWaiting ? `Ожидание (${timeLeft}с)` : 'Следующий сигнал'}
             </Button>
           </Card>
         </div>
