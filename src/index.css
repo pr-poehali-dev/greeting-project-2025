@@ -84,3 +84,21 @@
       inset 0 0 10px var(--neon-cyan);
   }
 }
+
+#pp-branding,
+[id*="poehali"],
+[class*="poehali-branding"],
+div[style*="position: fixed"][style*="bottom"][style*="right"] {
+  position: fixed !important;
+  bottom: 4px !important;
+  right: 50% !important;
+  transform: translateX(50%) !important;
+  font-size: 10px !important;
+  opacity: 0.5 !important;
+  z-index: 999 !important;
+  pointer-events: none !important;
+  text-align: center !important;
+  width: 100% !important;
+  left: auto !important;
+  top: auto !important;
+}
