@@ -276,32 +276,6 @@ const Index = () => {
                 VIP Сигналы
               </Button>
             </div>
-
-            {user?.referralCode && (
-              <Card className="bg-black/60 border border-[#FF10F0]/30 p-4 sm:p-6">
-                <h3 className="text-lg sm:text-xl font-bold text-center mb-4" style={{ color: '#FF10F0' }}>
-                  Ваша реферальная ссылка
-                </h3>
-                <p className="text-xs sm:text-sm text-center text-[#00F0FF] mb-4">
-                  Отправьте эту ссылку другу, и когда он зарегистрируется, вам зачислится +1 реферал
-                </p>
-                <div className="bg-[#1a1a2e] p-3 sm:p-4 rounded-lg border border-[#FF10F0]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`https://t.me/Lusky_bear_bot?start=${user.referralCode}`}
-                    className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
-                  />
-                  <Button
-                    onClick={copyReferralLink}
-                    className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
-                  >
-                    <Icon name="Copy" size={18} className="mr-2" />
-                    Копировать
-                  </Button>
-                </div>
-              </Card>
-            )}
           </div>
         </div>
       </div>
@@ -463,40 +437,15 @@ const Index = () => {
                     </p>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <Button
-                      onClick={handleWithdraw}
-                      className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all px-6 py-2"
-                    >
-                      <Icon name="Wallet" size={20} className="mr-2" />
-                      Вывести
-                    </Button>
-                    <p className="text-xs text-[#00F0FF] mt-2">Минимальная сумма вывода: 200 ₽</p>
-                  </div>
-
-                  {user?.referralCode && (
-                    <div className="bg-[#1a1a2e] p-4 rounded-lg border border-[#FF10F0]/30">
-                      <p className="text-xs sm:text-sm text-center text-[#00F0FF] mb-3">
-                        Отправьте эту ссылку другу для получения рефералов
-                      </p>
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        <input
-                          type="text"
-                          readOnly
-                          value={`https://t.me/Lusky_bear_bot?start=${user.referralCode}`}
-                          className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
-                        />
-                        <Button
-                          onClick={copyReferralLink}
-                          className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
-                        >
-                          <Icon name="Copy" size={18} className="mr-2" />
-                          Копировать
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                <div className="text-center">
+                  <Button
+                    onClick={handleWithdraw}
+                    className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all px-6 py-2"
+                  >
+                    <Icon name="Wallet" size={20} className="mr-2" />
+                    Вывести
+                  </Button>
+                  <p className="text-xs text-[#00F0FF] mt-2">Минимальная сумма вывода: 200 ₽</p>
                 </div>
               </div>
 
@@ -535,27 +484,35 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="bg-black/60 p-3 sm:p-4 rounded-lg border border-[#FF10F0]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                  <input
-                    type="text"
-                    readOnly
-                    value={user?.referralCode ? `https://t.me/Lusky_bear_bot?start=${user.referralCode}` : ''}
-                    className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
-                  />
-                  <Button
-                    onClick={copyReferralLink}
-                    className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all w-full sm:w-auto"
-                  >
-                    <Icon name="Copy" size={18} className="mr-2" />
-                    Копировать
-                  </Button>
+              {user?.referralCode && (
+                <div className="bg-black/60 p-4 sm:p-6 rounded-lg border border-[#FF10F0]/30">
+                  <h3 className="text-lg sm:text-xl font-bold text-center mb-4" style={{ color: '#FF10F0' }}>
+                    Ваша реферальная ссылка
+                  </h3>
+                  <p className="text-xs sm:text-sm text-center text-[#00F0FF] mb-4">
+                    Отправьте эту ссылку другу для получения рефералов
+                  </p>
+                  <div className="bg-[#1a1a2e] p-3 sm:p-4 rounded-lg border border-[#FF10F0]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <input
+                      type="text"
+                      readOnly
+                      value={`https://t.me/Lusky_bear_bot?start=${user.referralCode}`}
+                      className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
+                    />
+                    <Button
+                      onClick={copyReferralLink}
+                      className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
+                    >
+                      <Icon name="Copy" size={18} className="mr-2" />
+                      Копировать
+                    </Button>
+                  </div>
                 </div>
+              )}
 
-                <p className="text-xs sm:text-sm text-center text-[#00F0FF]">
-                  Чтобы вывести баланс, напишите администратору и предоставьте скриншоты
-                </p>
-              </div>
+              <p className="text-xs sm:text-sm text-center text-[#00F0FF]">
+                Чтобы вывести баланс, напишите администратору и предоставьте скриншоты
+              </p>
             </Card>
         </div>
       </div>
