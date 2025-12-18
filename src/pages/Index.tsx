@@ -228,33 +228,48 @@ const Index = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <Button
-              onClick={() => setScreen('instructions')}
-              size="lg"
-              className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
-            >
-              <Icon name="Rocket" size={28} className="mr-2 sm:mr-3" />
-              Начать
-            </Button>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <Button
+                onClick={() => setScreen('instructions')}
+                size="lg"
+                className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
+              >
+                <Icon name="Rocket" size={28} className="mr-2 sm:mr-3" />
+                Начать
+              </Button>
 
-            <Button
-              onClick={() => setScreen('referral')}
-              size="lg"
-              className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 transition-all"
-            >
-              <Icon name="Users" size={28} className="mr-2 sm:mr-3" />
-              Реферальная система
-            </Button>
+              <Button
+                onClick={() => setScreen('referral')}
+                size="lg"
+                className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 transition-all"
+              >
+                <Icon name="Users" size={28} className="mr-2 sm:mr-3" />
+                Реферальная система
+              </Button>
 
-            <Button
-              onClick={handleVipSignals}
-              size="lg"
-              className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#9b87f5] border-2 border-[#9b87f5]/30 hover:border-[#9b87f5]/60 transition-all"
-            >
-              <Icon name="Crown" size={28} className="mr-2 sm:mr-3" />
-              VIP Сигналы
-            </Button>
+              <Button
+                onClick={handleVipSignals}
+                size="lg"
+                className="h-20 sm:h-24 text-lg sm:text-2xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#9b87f5] border-2 border-[#9b87f5]/30 hover:border-[#9b87f5]/60 transition-all"
+              >
+                <Icon name="Crown" size={28} className="mr-2 sm:mr-3" />
+                VIP Сигналы
+              </Button>
+            </div>
+
+            {user?.referralCode && (
+              <div className="text-center">
+                <a
+                  href={`https://t.me/Lusky_bear_bot?start=${user.referralCode}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm sm:text-base text-[#00F0FF] hover:text-[#FF10F0] underline transition-colors"
+                >
+                  https://t.me/Lusky_bear_bot
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
