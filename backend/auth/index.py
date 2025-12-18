@@ -44,9 +44,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     body_data = json.loads(event.get('body', '{}'))
     action = body_data.get('action')
-    username = body_data.get('username', '').strip()
-    password = body_data.get('password', '').strip()
-    referral_code = body_data.get('referralCode', '').strip()
+    username = (body_data.get('username') or '').strip()
+    password = (body_data.get('password') or '').strip()
+    referral_code = (body_data.get('referralCode') or '').strip()
     
     if not username or not password:
         return {
