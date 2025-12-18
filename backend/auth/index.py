@@ -136,7 +136,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             password_hash = hash_password(password)
             
             cur.execute(
-                "SELECT id, username, balance, referral_count, referral_code FROM users WHERE username = %s AND password_hash = %s",
+                "SELECT id, username, balance, referral_count, referral_code, is_banned, ban_reason FROM users WHERE username = %s AND password_hash = %s",
                 (username, password_hash)
             )
             user = cur.fetchone()
@@ -146,6 +146,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'statusCode': 401,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                     'body': json.dumps({'error': 'Неверное имя пользователя или пароль'}),
+                    'isBase64Encoded': False
+                }
+            
+            if user[5]:
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': f'Ваш аккаунт заблокирован. Причина: {user[6]}'}),
                     'isBase64Encoded': False
                 }
             
