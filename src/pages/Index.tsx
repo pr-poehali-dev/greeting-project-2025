@@ -484,7 +484,7 @@ const Index = () => {
                     type="text"
                     readOnly
                     value={user?.referralCode ? `https://t.me/Lusky_bear_bot?start=${user.referralCode}` : ''}
-                    className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
+                    className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm py-1 px-2"
                   />
                   <Button
                     onClick={copyReferralLink}
