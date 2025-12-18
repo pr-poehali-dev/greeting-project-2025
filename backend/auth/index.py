@@ -96,6 +96,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     referred_by_id = referrer[0]
             
             new_referral_code = generate_referral_code()
+            while True:
+                cur.execute("SELECT id FROM users WHERE referral_code = %s", (new_referral_code,))
+                if not cur.fetchone():
+                    break
+                new_referral_code = generate_referral_code()
             
             cur.execute(
                 "INSERT INTO users (username, password_hash, referral_code, referred_by) VALUES (%s, %s, %s, %s) RETURNING id, username, balance, referral_count, referral_code",
