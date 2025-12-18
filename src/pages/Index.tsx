@@ -1,13 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 
-type Screen = 'home' | 'instructions' | 'signals' | 'referral';
+type Screen = 'home' | 'instructions' | 'signals' | 'referral' | 'auth';
+
+interface User {
+  id: number;
+  username: string;
+  balance: number;
+  referralCount: number;
+}
+
+const AUTH_URL = 'https://functions.poehali.dev/84480352-2061-48c5-b055-98dde5c9eaac';
 
 const Index = () => {
-  const [screen, setScreen] = useState<Screen>('home');
+  const [screen, setScreen] = useState<Screen>('auth');
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState<User | null>(null);
   const [currentSignal, setCurrentSignal] = useState<number | null>(null);
   const [balance, setBalance] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
@@ -15,6 +29,17 @@ const Index = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isWaiting, setIsWaiting] = useState(false);
   const referralLink = `${window.location.origin}/?ref=${userId}`;
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setUser(userData);
+      setBalance(userData.balance);
+      setReferralCount(userData.referralCount);
+      setScreen('home');
+    }
+  }, []);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -64,6 +89,114 @@ const Index = () => {
     window.open('https://t.me/C_Treasure_Bot/app?startapp=eHd1PTE3MDQwMjgzNzcmbT1uZXRsbzU1NSZjPWRlZmF1bHQ', '_blank');
   };
 
+  const handleAuth = async () => {
+    if (!username.trim() || !password.trim()) {
+      toast.error('Введите имя пользователя и пароль');
+      return;
+    }
+
+    try {
+      const response = await fetch(AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: authMode,
+          username: username.trim(),
+          password: password.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setUser(data.user);
+        setBalance(data.user.balance);
+        setReferralCount(data.user.referralCount);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        toast.success(authMode === 'login' ? 'Вы вошли в систему!' : 'Регистрация успешна!');
+        setScreen('home');
+      } else {
+        toast.error(data.error || 'Ошибка');
+      }
+    } catch (error) {
+      toast.error('Ошибка соединения с сервером');
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setBalance(0);
+    setReferralCount(0);
+    localStorage.removeItem('user');
+    setScreen('auth');
+    toast.success('Вы вышли из системы');
+  };
+
+  if (screen === 'auth') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
+        
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-48 h-48 sm:w-64 sm:h-64 bg-[#FF10F0] rounded-full blur-[100px] opacity-10 animate-pulse-glow" />
+          <div className="absolute bottom-20 right-10 w-48 h-48 sm:w-64 sm:h-64 bg-[#00F0FF] rounded-full blur-[100px] opacity-10 animate-pulse-glow" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <div className="relative z-10 max-w-md w-full space-y-8 animate-fade-in">
+          <h1 className="text-4xl sm:text-6xl font-black text-center tracking-wider mb-8" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
+            LUSKY BEAR
+          </h1>
+
+          <Card className="bg-black/60 border border-[#FF10F0]/30 p-6 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-black mb-6 text-center" style={{ color: authMode === 'login' ? '#00F0FF' : '#FF10F0' }}>
+              {authMode === 'login' ? 'Вход' : 'Регистрация'}
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Имя пользователя"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="bg-[#1a1a2e] border-[#FF10F0]/30 text-white placeholder:text-gray-500"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+                />
+              </div>
+
+              <div>
+                <Input
+                  type="password"
+                  placeholder="Пароль"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-[#1a1a2e] border-[#FF10F0]/30 text-white placeholder:text-gray-500"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+                />
+              </div>
+
+              <Button
+                onClick={handleAuth}
+                className="w-full h-12 text-lg font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
+              >
+                {authMode === 'login' ? 'Войти' : 'Зарегистрироваться'}
+              </Button>
+
+              <div className="text-center">
+                <button
+                  onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                  className="text-[#00F0FF] hover:text-[#FF10F0] transition-colors text-sm"
+                >
+                  {authMode === 'login' ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите'}
+                </button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   if (screen === 'home') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
@@ -75,9 +208,19 @@ const Index = () => {
         </div>
 
         <div className="relative z-10 max-w-4xl w-full space-y-8 sm:space-y-12 animate-fade-in">
-          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-center tracking-wider" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
-            LUSKY BEAR
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-center tracking-wider flex-1" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
+              LUSKY BEAR
+            </h1>
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              className="text-[#00F0FF] hover:text-[#FF10F0] text-sm"
+            >
+              <Icon name="LogOut" size={20} className="mr-1" />
+              Выход
+            </Button>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             <Button
