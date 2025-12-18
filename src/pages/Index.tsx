@@ -38,7 +38,13 @@ const Index = () => {
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const savedAdmin = localStorage.getItem('isAdmin');
+    
+    if (savedAdmin === 'true') {
+      setIsAdmin(true);
+      loadAdminUsers();
+      setScreen('admin');
+    } else if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
         setUser(userData);
@@ -52,6 +58,35 @@ const Index = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (user && screen !== 'auth' && !isAdmin) {
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(ADMIN_URL);
+          const data = await response.json();
+          if (data.users) {
+            const currentUser = data.users.find((u: any) => u.id === user.id);
+            if (currentUser) {
+              setBalance(currentUser.balance);
+              setReferralCount(currentUser.referralCount);
+              const updatedUser = {
+                ...user,
+                balance: currentUser.balance,
+                referralCount: currentUser.referralCount
+              };
+              setUser(updatedUser);
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+            }
+          }
+        } catch (error) {
+          console.error('Error updating user data:', error);
+        }
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [user, screen, isAdmin]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -211,6 +246,7 @@ const Index = () => {
       if (data.success) {
         toast.success('Данные пользователя обновлены');
         await loadAdminUsers();
+        setScreen('admin');
         setSelectedUser(null);
         setEditBalance('');
         setEditReferrals('');
@@ -243,6 +279,7 @@ const Index = () => {
       if (data.success) {
         toast.success('Пользователь заблокирован');
         await loadAdminUsers();
+        setScreen('admin');
         setSelectedUser(null);
         setBanReason('');
       } else {
@@ -268,6 +305,8 @@ const Index = () => {
       if (data.success) {
         toast.success('Пользователь разблокирован');
         await loadAdminUsers();
+        setScreen('admin');
+        setSelectedUser(null);
       } else {
         toast.error(data.error || 'Ошибка');
       }
