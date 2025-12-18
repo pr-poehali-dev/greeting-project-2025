@@ -485,32 +485,33 @@ const Index = () => {
               </div>
 
               {user?.referralCode && (
-                <div className="bg-black/60 p-4 sm:p-6 rounded-lg border border-[#FF10F0]/30">
-                  <h3 className="text-lg sm:text-xl font-bold text-center mb-4" style={{ color: '#FF10F0' }}>
+                <div className="bg-black/60 p-3 sm:p-4 rounded-lg border border-[#FF10F0]/30">
+                  <h3 className="text-base sm:text-lg font-bold text-center mb-2" style={{ color: '#FF10F0' }}>
                     Ваша реферальная ссылка
                   </h3>
-                  <p className="text-xs sm:text-sm text-center text-[#00F0FF] mb-4">
+                  <p className="text-xs text-center text-[#00F0FF] mb-3">
                     Отправьте эту ссылку другу для получения рефералов
                   </p>
-                  <div className="bg-[#1a1a2e] p-3 sm:p-4 rounded-lg border border-[#FF10F0]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="bg-[#1a1a2e] p-2 sm:p-3 rounded-lg border border-[#FF10F0]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <input
                       type="text"
                       readOnly
                       value={`https://t.me/Lusky_bear_bot?start=${user.referralCode}`}
-                      className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
+                      className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs px-2 py-1"
                     />
                     <Button
                       onClick={copyReferralLink}
+                      size="sm"
                       className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all"
                     >
-                      <Icon name="Copy" size={18} className="mr-2" />
+                      <Icon name="Copy" size={16} className="mr-1" />
                       Копировать
                     </Button>
                   </div>
                 </div>
               )}
 
-              <p className="text-xs sm:text-sm text-center text-[#00F0FF]">
+              <p className="text-xs text-center text-[#00F0FF]">
                 Чтобы вывести баланс, напишите администратору и предоставьте скриншоты
               </p>
             </Card>
