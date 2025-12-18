@@ -12,6 +12,7 @@ interface User {
   username: string;
   balance: number;
   referralCount: number;
+  referralCode: string;
 }
 
 const AUTH_URL = 'https://functions.poehali.dev/84480352-2061-48c5-b055-98dde5c9eaac';
@@ -25,10 +26,8 @@ const Index = () => {
   const [currentSignal, setCurrentSignal] = useState<number | null>(null);
   const [balance, setBalance] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
-  const [userId] = useState(() => Math.random().toString(36).substring(2, 15));
   const [timeLeft, setTimeLeft] = useState(0);
   const [isWaiting, setIsWaiting] = useState(false);
-  const referralLink = `${window.location.origin}/?ref=${userId}`;
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -81,8 +80,11 @@ const Index = () => {
   };
 
   const copyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink);
-    toast.success('Ссылка скопирована в буфер обмена!');
+    if (user?.referralCode) {
+      const referralLink = `https://t.me/Lusky_bear_bot?start=${user.referralCode}`;
+      navigator.clipboard.writeText(referralLink);
+      toast.success('Ссылка скопирована в буфер обмена!');
+    }
   };
 
   const handleRegister = () => {
@@ -96,13 +98,17 @@ const Index = () => {
     }
 
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const referralCode = urlParams.get('ref');
+
       const response = await fetch(AUTH_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: authMode,
           username: username.trim(),
-          password: password.trim()
+          password: password.trim(),
+          referralCode: authMode === 'register' ? referralCode : undefined
         })
       });
 
@@ -208,10 +214,24 @@ const Index = () => {
         </div>
 
         <div className="relative z-10 max-w-4xl w-full space-y-8 sm:space-y-12 animate-fade-in">
-          <div className="flex justify-between items-center">
-            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-center tracking-wider flex-1" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
-              LUSKY BEAR
-            </h1>
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-center tracking-wider" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
+                LUSKY BEAR
+              </h1>
+              <div className="mt-4 text-center space-y-2">
+                <p className="text-sm text-[#00F0FF]">Баланс: <span className="text-[#FF10F0] font-bold">{balance} ₽</span></p>
+                <p className="text-sm text-[#00F0FF]">Рефералов: <span className="text-[#FF10F0] font-bold">{referralCount}</span></p>
+                {user?.referralCode && (
+                  <button
+                    onClick={copyReferralLink}
+                    className="text-xs text-[#00F0FF] hover:text-[#FF10F0] underline transition-colors"
+                  >
+                    https://t.me/Lusky_bear_bot?start={user.referralCode}
+                  </button>
+                )}
+              </div>
+            </div>
             <Button
               onClick={handleLogout}
               variant="ghost"
@@ -462,7 +482,7 @@ const Index = () => {
                   <input
                     type="text"
                     readOnly
-                    value={referralLink}
+                    value={user?.referralCode ? `https://t.me/Lusky_bear_bot?start=${user.referralCode}` : ''}
                     className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs sm:text-sm px-2 py-1"
                   />
                   <Button

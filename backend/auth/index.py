@@ -2,10 +2,15 @@ import json
 import os
 import hashlib
 import psycopg2
+import random
+import string
 from typing import Dict, Any
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
+
+def generate_referral_code() -> str:
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 def get_db_connection():
     return psycopg2.connect(os.environ['DATABASE_URL'])
@@ -41,6 +46,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     action = body_data.get('action')
     username = body_data.get('username', '').strip()
     password = body_data.get('password', '').strip()
+    referral_code = body_data.get('referralCode', '').strip()
     
     if not username or not password:
         return {
@@ -82,11 +88,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
+            referred_by_id = None
+            if referral_code:
+                cur.execute("SELECT id FROM users WHERE referral_code = %s", (referral_code,))
+                referrer = cur.fetchone()
+                if referrer:
+                    referred_by_id = referrer[0]
+            
+            new_referral_code = generate_referral_code()
+            
             cur.execute(
-                "INSERT INTO users (username, password_hash) VALUES (%s, %s) RETURNING id, username, balance, referral_count",
-                (username, password_hash)
+                "INSERT INTO users (username, password_hash, referral_code, referred_by) VALUES (%s, %s, %s, %s) RETURNING id, username, balance, referral_count, referral_code",
+                (username, password_hash, new_referral_code, referred_by_id)
             )
             user = cur.fetchone()
+            
+            if referred_by_id:
+                cur.execute(
+                    "UPDATE users SET referral_count = referral_count + 1 WHERE id = %s",
+                    (referred_by_id,)
+                )
+            
             conn.commit()
             
             return {
@@ -98,7 +120,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'id': user[0],
                         'username': user[1],
                         'balance': user[2],
-                        'referralCount': user[3]
+                        'referralCount': user[3],
+                        'referralCode': user[4]
                     }
                 }),
                 'isBase64Encoded': False
@@ -108,7 +131,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             password_hash = hash_password(password)
             
             cur.execute(
-                "SELECT id, username, balance, referral_count FROM users WHERE username = %s AND password_hash = %s",
+                "SELECT id, username, balance, referral_count, referral_code FROM users WHERE username = %s AND password_hash = %s",
                 (username, password_hash)
             )
             user = cur.fetchone()
@@ -130,7 +153,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'id': user[0],
                         'username': user[1],
                         'balance': user[2],
-                        'referralCount': user[3]
+                        'referralCount': user[3],
+                        'referralCode': user[4]
                     }
                 }),
                 'isBase64Encoded': False
