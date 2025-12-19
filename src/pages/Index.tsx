@@ -631,6 +631,17 @@ const Index = () => {
                     </p>
                   </div>
                 </div>
+
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 sm:p-4">
+                  <div className="flex items-start gap-2">
+                    <Icon name="AlertTriangle" size={20} className="text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs sm:text-sm text-yellow-200">
+                      <p className="font-bold mb-1">⚠️ Внимание!</p>
+                      <p>Если баланс не обновляется, выйдите из аккаунта и зайдите назад. <strong>Сохраняйте свои логин и пароль!</strong></p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="text-center">
                   <Button
                     onClick={handleWithdraw}
