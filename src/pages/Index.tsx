@@ -60,7 +60,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    if (user && screen === 'referral' && !isAdmin) {
+    if (user && !isAdmin) {
       const interval = setInterval(async () => {
         try {
           const response = await fetch(ADMIN_URL);
@@ -83,10 +83,10 @@ const Index = () => {
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 
                 if (balanceChanged) {
-                  toast.info(`Ваш баланс обновлён: ${currentUser.balance} ₽`);
+                  toast.info(`💰 Ваш баланс обновлён: ${currentUser.balance} ₽`);
                 }
                 if (referralsChanged) {
-                  toast.info(`Рефералов: ${currentUser.referralCount}`);
+                  toast.info(`👥 Рефералов: ${currentUser.referralCount}`);
                 }
               }
             }
@@ -94,11 +94,11 @@ const Index = () => {
         } catch (error) {
           console.error('Error updating user data:', error);
         }
-      }, 30000);
+      }, 5000);
       
       return () => clearInterval(interval);
     }
-  }, [user?.id, screen, isAdmin, balance, referralCount]);
+  }, [user?.id, isAdmin, balance, referralCount]);
 
   useEffect(() => {
     if (timeLeft > 0) {
