@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 
-type Screen = 'home' | 'instructions' | 'signals' | 'referral' | 'auth' | 'admin' | 'admin_user' | 'vip';
+type Screen = 'home' | 'instructions' | 'signals' | 'referral' | 'auth' | 'admin' | 'admin_user' | 'vip' | 'crashx';
 
 interface User {
   id: number;
@@ -35,6 +35,9 @@ const Index = () => {
   const [editBalance, setEditBalance] = useState('');
   const [editReferrals, setEditReferrals] = useState('');
   const [banReason, setBanReason] = useState('');
+  const [crashXSignal, setCrashXSignal] = useState<number | null>(null);
+  const [crashXTimeLeft, setCrashXTimeLeft] = useState(0);
+  const [isCrashXWaiting, setIsCrashXWaiting] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -109,6 +112,15 @@ const Index = () => {
     }
   }, [timeLeft, isWaiting]);
 
+  useEffect(() => {
+    if (crashXTimeLeft > 0) {
+      const timer = setTimeout(() => setCrashXTimeLeft(crashXTimeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (crashXTimeLeft === 0 && isCrashXWaiting) {
+      setIsCrashXWaiting(false);
+    }
+  }, [crashXTimeLeft, isCrashXWaiting]);
+
   const generateSignal = () => {
     if (isWaiting) {
       toast.error(`Подождите ${timeLeft} секунд до следующего сигнала`);
@@ -145,6 +157,28 @@ const Index = () => {
       navigator.clipboard.writeText(referralLink);
       toast.success('Ссылка скопирована в буфер обмена!');
     }
+  };
+
+  const generateCrashXSignal = () => {
+    if (isCrashXWaiting) {
+      toast.error(`Подождите ${crashXTimeLeft} секунд до следующего сигнала`);
+      return;
+    }
+
+    const rand = Math.random() * 100;
+    let signal;
+    
+    if (rand < 5) {
+      signal = (Math.random() * (100 - 15) + 15).toFixed(2);
+    } else if (rand < 25) {
+      signal = (Math.random() * (15 - 10) + 10).toFixed(2);
+    } else {
+      signal = (Math.random() * (10 - 1.00) + 1.00).toFixed(2);
+    }
+    
+    setCrashXSignal(parseFloat(signal));
+    setIsCrashXWaiting(true);
+    setCrashXTimeLeft(60);
   };
 
   const handleRegister = () => {
@@ -784,7 +818,7 @@ const Index = () => {
             </Button>
 
             <Button
-              onClick={() => window.open('https://t.me/Lusky_bear_bot', '_blank')}
+              onClick={() => setScreen('crashx')}
               size="lg"
               className="flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 transition-all"
             >
@@ -792,6 +826,74 @@ const Index = () => {
               К сигналам
             </Button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === 'crashx') {
+    return (
+      <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
+        
+        <div className="relative z-10 max-w-2xl mx-auto space-y-6 animate-fade-in py-4">
+          <Button
+            onClick={() => setScreen('vip')}
+            variant="ghost"
+            className="text-[#00F0FF] hover:text-[#FF10F0]"
+          >
+            <Icon name="ArrowLeft" size={20} className="mr-2" />
+            Назад
+          </Button>
+
+          <Card className="bg-black/60 border border-[#00F0FF]/40 p-6 sm:p-8">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-3">🎰</div>
+              <h1 className="text-3xl sm:text-4xl font-black" style={{ color: '#00F0FF' }}>
+                CRASH X
+              </h1>
+            </div>
+
+            {crashXSignal === null ? (
+              <Button
+                onClick={generateCrashXSignal}
+                size="lg"
+                className="w-full h-16 sm:h-20 text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#9b87f5] to-[#7c3aed] hover:from-[#8b77e5] hover:to-[#6c2acd] text-white border-2 border-[#9b87f5] transition-all"
+              >
+                <Icon name="Zap" size={28} className="mr-3" />
+                Получить сигнал
+              </Button>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-black/80 border-2 border-[#9b87f5] rounded-2xl p-6 sm:p-8">
+                  <p className="text-[#00F0FF] text-lg sm:text-xl text-center mb-3">Ваш сигнал:</p>
+                  <p className="text-5xl sm:text-7xl font-black text-center" style={{ color: '#FF10F0' }}>
+                    {crashXSignal.toFixed(2)}x
+                  </p>
+                </div>
+
+                <div className="bg-black/60 border border-[#00F0FF]/30 rounded-xl p-4 sm:p-6 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Icon name="Clock" size={24} className="text-[#00F0FF]" />
+                    <p className="text-[#00F0FF] text-base sm:text-lg">Следующий сигнал через:</p>
+                  </div>
+                  <p className="text-3xl sm:text-4xl font-bold" style={{ color: '#FF10F0' }}>
+                    {crashXTimeLeft}с
+                  </p>
+                </div>
+
+                <Button
+                  onClick={generateCrashXSignal}
+                  disabled={isCrashXWaiting}
+                  size="lg"
+                  className="w-full h-14 sm:h-16 text-lg sm:text-xl font-bold bg-gradient-to-r from-[#9b87f5] to-[#7c3aed] hover:from-[#8b77e5] hover:to-[#6c2acd] text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <Icon name="Zap" size={24} className="mr-2" />
+                  {isCrashXWaiting ? `Ожидание (${crashXTimeLeft}с)` : 'Получить следующий сигнал'}
+                </Button>
+              </div>
+            )}
+          </Card>
         </div>
       </div>
     );
