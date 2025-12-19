@@ -60,7 +60,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    if (user && screen !== 'auth' && !isAdmin) {
+    if (user && screen === 'referral' && !isAdmin) {
       const interval = setInterval(async () => {
         try {
           const response = await fetch(ADMIN_URL);
@@ -94,7 +94,7 @@ const Index = () => {
         } catch (error) {
           console.error('Error updating user data:', error);
         }
-      }, 2000);
+      }, 30000);
       
       return () => clearInterval(interval);
     }
