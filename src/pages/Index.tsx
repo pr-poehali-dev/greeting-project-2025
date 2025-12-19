@@ -183,6 +183,14 @@ const Index = () => {
         }
       }
 
+      if (authMode === 'register') {
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        if (registeredAccounts.length >= 2) {
+          toast.error('Превышен лимит регистраций с этого устройства (максимум 2 аккаунта)');
+          return;
+        }
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const referralCode = urlParams.get('ref');
 
@@ -212,6 +220,13 @@ const Index = () => {
         setBalance(userData.balance);
         setReferralCount(userData.referralCount);
         localStorage.setItem('user', JSON.stringify(userData));
+        
+        if (authMode === 'register') {
+          const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+          registeredAccounts.push(userData.username);
+          localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+        }
+        
         toast.success(authMode === 'login' ? 'Вы вошли в систему!' : 'Регистрация успешна!');
         setScreen('home');
         
