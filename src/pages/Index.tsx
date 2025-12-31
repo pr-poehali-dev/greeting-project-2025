@@ -38,6 +38,8 @@ const Index = () => {
   const [crashXSignal, setCrashXSignal] = useState<number | null>(null);
   const [crashXTimeLeft, setCrashXTimeLeft] = useState(0);
   const [isCrashXWaiting, setIsCrashXWaiting] = useState(false);
+  const [showVipPasswordModal, setShowVipPasswordModal] = useState(false);
+  const [vipPassword, setVipPassword] = useState('');
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -144,7 +146,18 @@ const Index = () => {
   };
 
   const handleVipSignals = () => {
-    setScreen('vip');
+    setShowVipPasswordModal(true);
+  };
+
+  const handleVipPasswordSubmit = () => {
+    if (vipPassword === 'VDUILRE') {
+      setShowVipPasswordModal(false);
+      setVipPassword('');
+      setScreen('vip');
+      toast.success('Доступ к VIP сигналам открыт!');
+    } else {
+      toast.error('Неверный пароль!');
+    }
   };
 
   const handleWithdraw = () => {
@@ -1075,7 +1088,57 @@ const Index = () => {
     );
   }
 
-  return null;
+  return (
+    <>
+      {showVipPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <Card className="bg-[#1a1a2e] border-2 border-[#9b87f5]/50 p-6 max-w-md w-full">
+            <div className="space-y-4">
+              <div className="text-center">
+                <Icon name="Crown" size={48} className="mx-auto mb-4 text-[#9b87f5]" />
+                <h2 className="text-2xl font-black mb-2" style={{ color: '#9b87f5' }}>
+                  VIP Сигналы
+                </h2>
+                <p className="text-gray-400 text-sm">
+                  Введите пароль для доступа к VIP сигналам
+                </p>
+              </div>
+
+              <Input
+                type="password"
+                placeholder="Введите пароль"
+                value={vipPassword}
+                onChange={(e) => setVipPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleVipPasswordSubmit()}
+                className="bg-black/60 border-[#9b87f5]/30 text-white placeholder:text-gray-500"
+                autoFocus
+              />
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    setShowVipPasswordModal(false);
+                    setVipPassword('');
+                  }}
+                  variant="outline"
+                  className="flex-1 bg-transparent border-[#FF10F0]/30 text-[#FF10F0] hover:bg-[#FF10F0]/10"
+                >
+                  Отмена
+                </Button>
+                <Button
+                  onClick={handleVipPasswordSubmit}
+                  className="flex-1 bg-gradient-to-r from-[#9b87f5] to-[#7c3aed] hover:from-[#8b77e5] hover:to-[#6c2acd] text-white"
+                >
+                  <Icon name="Unlock" size={18} className="mr-2" />
+                  Войти
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default Index;
