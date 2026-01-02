@@ -1161,9 +1161,9 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
         
         <div className="relative z-10 max-w-6xl mx-auto space-y-6 animate-fade-in py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl sm:text-5xl font-black" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
-              АДМИН-ПАНЕЛЬ
+          <div className="flex justify-between items-center flex-wrap gap-3">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
+              👑 АДМИН-ПАНЕЛЬ
             </h1>
             <Button
               onClick={() => {
@@ -1172,54 +1172,58 @@ const Index = () => {
                 setScreen('auth');
                 toast.success('Вы вышли из админ-панели');
               }}
-              variant="ghost"
-              className="text-[#00F0FF] hover:text-[#FF10F0] text-sm"
+              size="sm"
+              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-600/30"
             >
-              <Icon name="LogOut" size={20} className="mr-1" />
+              <Icon name="LogOut" size={18} className="mr-1" />
               Выход
             </Button>
           </div>
 
-          <div className="flex gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <Button
               onClick={() => setAdminView('users')}
-              className={`flex-1 h-12 text-lg font-bold ${
+              className={`h-12 sm:h-14 text-base sm:text-lg font-bold transition-all ${
                 adminView === 'users'
-                  ? 'bg-[#FF10F0] text-white border-2 border-[#FF10F0]'
-                  : 'bg-[#1a1a2e] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60'
+                  ? 'bg-gradient-to-br from-[#FF10F0] to-[#c710c0] text-white border-2 border-[#FF10F0] shadow-lg shadow-[#FF10F0]/50'
+                  : 'bg-[#1a1a2e] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 hover:bg-[#252545]'
               }`}
             >
-              <Icon name="Users" size={20} className="mr-2" />
-              Пользователи
+              <Icon name="Users" size={20} className="mr-1 sm:mr-2" />
+              <span className="hidden xs:inline">Пользователи</span>
+              <span className="xs:hidden">Юзеры</span>
             </Button>
             <Button
               onClick={() => {
                 setAdminView('withdrawals');
                 loadWithdrawals();
               }}
-              className={`flex-1 h-12 text-lg font-bold ${
+              className={`h-12 sm:h-14 text-base sm:text-lg font-bold transition-all ${
                 adminView === 'withdrawals'
-                  ? 'bg-[#00F0FF] text-white border-2 border-[#00F0FF]'
-                  : 'bg-[#1a1a2e] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60'
+                  ? 'bg-gradient-to-br from-[#00F0FF] to-[#00a8b8] text-white border-2 border-[#00F0FF] shadow-lg shadow-[#00F0FF]/50'
+                  : 'bg-[#1a1a2e] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 hover:bg-[#252545]'
               }`}
             >
-              <Icon name="Wallet" size={20} className="mr-2" />
+              <Icon name="Wallet" size={20} className="mr-1 sm:mr-2" />
               Выводы
             </Button>
           </div>
 
-          <Card className="bg-black/60 border border-[#FF10F0]/30 p-4 sm:p-6">
+          <Card className="bg-black/70 backdrop-blur-sm border border-[#FF10F0]/30 p-3 sm:p-6 shadow-2xl">
             {adminView === 'users' && (
               <>
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center" style={{ color: '#00F0FF' }}>
-                  Список пользователей ({adminUsers.length})
-                </h2>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Icon name="Users" size={24} className="text-[#00F0FF]" />
+                  <h2 className="text-xl sm:text-2xl font-bold text-center" style={{ color: '#00F0FF' }}>
+                    Пользователи ({adminUsers.length})
+                  </h2>
+                </div>
 
             <div className="space-y-2">
               {adminUsers.map((u) => (
                 <div
                   key={u.id}
-                  className="bg-[#1a1a2e] p-3 rounded-lg border border-[#FF10F0]/20 hover:border-[#FF10F0]/50 transition-all cursor-pointer"
+                  className="bg-gradient-to-br from-[#1a1a2e] to-[#252545] p-3 sm:p-4 rounded-xl border border-[#FF10F0]/20 hover:border-[#FF10F0]/60 hover:shadow-lg hover:shadow-[#FF10F0]/20 transition-all cursor-pointer active:scale-98"
                   onClick={() => {
                     setSelectedUser(u);
                     setEditBalance(u.balance.toString());
@@ -1227,26 +1231,27 @@ const Index = () => {
                     setScreen('admin_user');
                   }}
                 >
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-[#FF10F0]">{u.username}</p>
-                        <p className="text-xs text-gray-400">ID: {u.id}</p>
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm sm:text-base font-bold text-[#FF10F0] truncate">{u.username}</p>
+                        {u.isBanned && (
+                          <span className="text-xs bg-red-500/30 text-red-300 px-2 py-0.5 rounded-full border border-red-500/50 flex-shrink-0">
+                            🚫
+                          </span>
+                        )}
                       </div>
-                      {u.isBanned && (
-                        <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded">
-                          Заблокирован
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex gap-4 text-xs">
-                      <div>
-                        <span className="text-gray-400">Баланс:</span>{' '}
-                        <span className="text-[#00F0FF] font-bold">{u.balance} ₽</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Рефералов:</span>{' '}
-                        <span className="text-[#00F0FF] font-bold">{u.referralCount}</span>
+                      <p className="text-xs text-gray-500 mb-2">ID: {u.id}</p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                        <div className="flex items-center gap-1">
+                          <Icon name="Wallet" size={14} className="text-[#00F0FF]" />
+                          <span className="text-gray-400">Баланс:</span>
+                          <span className="text-[#00F0FF] font-bold">{u.balance} ₽</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Icon name="Users" size={14} className="text-[#FF10F0]" />
+                          <span className="text-gray-400">Рефералы:</span>
+                          <span className="text-[#FF10F0] font-bold">{u.referralCount}</span>
                       </div>
                     </div>
                   </div>
@@ -1258,50 +1263,83 @@ const Index = () => {
 
             {adminView === 'withdrawals' && (
               <>
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center" style={{ color: '#00F0FF' }}>
-                  Заявки на вывод ({withdrawals.length})
-                </h2>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Icon name="Wallet" size={24} className="text-[#00F0FF]" />
+                  <h2 className="text-xl sm:text-2xl font-bold text-center" style={{ color: '#00F0FF' }}>
+                    Заявки на вывод ({withdrawals.length})
+                  </h2>
+                </div>
 
                 <div className="space-y-3">
                   {withdrawals.length === 0 ? (
-                    <p className="text-center text-gray-400 py-8">Нет заявок на вывод</p>
+                    <div className="text-center py-12">
+                      <Icon name="Inbox" size={48} className="text-gray-600 mx-auto mb-3" />
+                      <p className="text-gray-400">Нет заявок на вывод</p>
+                    </div>
                   ) : (
                     withdrawals.map((w) => (
                       <div
                         key={w.id}
-                        className="bg-[#1a1a2e] p-4 rounded-lg border border-[#00F0FF]/20"
+                        className="bg-gradient-to-br from-[#1a1a2e] to-[#252545] p-3 sm:p-4 rounded-xl border border-[#00F0FF]/20 hover:border-[#00F0FF]/50 transition-all shadow-lg"
                       >
-                        <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
-                          <div className="flex-1">
-                            <p className="text-sm font-bold text-[#00F0FF]">{w.username}</p>
-                            <p className="text-xs text-gray-400 mb-2">ID: {w.userId} | Заявка #{w.id}</p>
-                            <p className="text-lg font-bold text-[#FF10F0]">{w.amount} ₽</p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              Метод: {w.method === 'sbp' ? 'СБП' : 'Карта'}
-                            </p>
+                        <div className="flex flex-col gap-3">
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Icon name="User" size={16} className="text-[#00F0FF] flex-shrink-0" />
+                                <p className="text-sm sm:text-base font-bold text-[#00F0FF] truncate">{w.username}</p>
+                              </div>
+                              <p className="text-xs text-gray-500 mb-2">ID юзера: {w.userId} • Заявка #{w.id}</p>
+                            </div>
+                            <div className="flex-shrink-0">
+                              <p className="text-xl sm:text-2xl font-black text-[#FF10F0]">{w.amount} ₽</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-black/40 rounded-lg p-2 sm:p-3 border border-[#00F0FF]/10">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Icon name="CreditCard" size={14} className="text-[#00F0FF]" />
+                              <span className="text-xs font-bold text-[#00F0FF]">
+                                {w.method === 'sbp' ? '🏦 СБП' : '💳 Карта'}
+                              </span>
+                            </div>
                             {w.method === 'sbp' && (
-                              <div className="text-xs text-gray-300 mt-2 space-y-1">
-                                <p>📱 {w.details.phone}</p>
-                                <p>👤 {w.details.name}</p>
-                                <p>🏦 {w.details.bank}</p>
+                              <div className="text-xs text-gray-300 space-y-1">
+                                <p className="flex items-center gap-1.5">
+                                  <span className="text-gray-500">Телефон:</span>
+                                  <span className="font-mono">{w.details.phone}</span>
+                                </p>
+                                <p className="flex items-center gap-1.5">
+                                  <span className="text-gray-500">Имя:</span>
+                                  <span>{w.details.name}</span>
+                                </p>
+                                <p className="flex items-center gap-1.5">
+                                  <span className="text-gray-500">Банк:</span>
+                                  <span className="font-semibold">{w.details.bank}</span>
+                                </p>
                               </div>
                             )}
                             {w.method === 'card' && (
-                              <div className="text-xs text-gray-300 mt-2">
-                                <p>💳 {w.details.cardNumber}</p>
+                              <div className="text-xs text-gray-300">
+                                <p className="flex items-center gap-1.5">
+                                  <span className="text-gray-500">Номер карты:</span>
+                                  <span className="font-mono">{w.details.cardNumber}</span>
+                                </p>
                               </div>
                             )}
-                            <p className="text-xs text-gray-500 mt-2">
-                              {new Date(w.createdAt).toLocaleString('ru-RU')}
-                            </p>
                           </div>
-                          <div className="flex flex-col gap-2">
+
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <span>{new Date(w.createdAt).toLocaleString('ru-RU')}</span>
+                          </div>
+
+                          <div className="flex gap-2">
                             {w.status === 'pending' ? (
                               <>
                                 <Button
                                   onClick={() => handleApproveWithdrawal(w.id)}
                                   size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg shadow-green-600/30 font-bold"
                                 >
                                   <Icon name="Check" size={16} className="mr-1" />
                                   Одобрить
@@ -1309,20 +1347,20 @@ const Index = () => {
                                 <Button
                                   onClick={() => handleRejectWithdrawal(w.id)}
                                   size="sm"
-                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-600/30 font-bold"
                                 >
                                   <Icon name="X" size={16} className="mr-1" />
                                   Отклонить
                                 </Button>
                               </>
                             ) : (
-                              <span className={`text-xs px-3 py-2 rounded text-center font-bold ${
+                              <div className={`flex-1 text-center py-2 rounded-lg font-bold text-sm ${
                                 w.status === 'approved' 
-                                  ? 'bg-green-500/20 text-green-400' 
-                                  : 'bg-red-500/20 text-red-400'
+                                  ? 'bg-green-500/20 text-green-300 border border-green-500/40' 
+                                  : 'bg-red-500/20 text-red-300 border border-red-500/40'
                               }`}>
-                                {w.status === 'approved' ? 'Одобрено' : 'Отклонено'}
-                              </span>
+                                {w.status === 'approved' ? '✅ Одобрено' : '❌ Отклонено'}
+                              </div>
                             )}
                           </div>
                         </div>
