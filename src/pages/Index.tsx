@@ -1160,7 +1160,7 @@ const Index = () => {
       <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
         
-        <div className="relative z-10 max-w-6xl mx-auto space-y-6 animate-fade-in py-4">
+        <div className="relative z-10 max-w-6xl mx-auto space-y-6 py-4">
           <div className="flex justify-between items-center flex-wrap gap-3">
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-black" style={{ color: '#FF10F0', textShadow: '0 0 20px rgba(255, 16, 240, 0.5)' }}>
               👑 АДМИН-ПАНЕЛЬ
@@ -1183,10 +1183,10 @@ const Index = () => {
           <div className="grid grid-cols-2 gap-3 mb-6">
             <Button
               onClick={() => setAdminView('users')}
-              className={`h-12 sm:h-14 text-base sm:text-lg font-bold transition-all ${
+              className={`h-12 sm:h-14 text-base sm:text-lg font-bold ${
                 adminView === 'users'
-                  ? 'bg-gradient-to-br from-[#FF10F0] to-[#c710c0] text-white border-2 border-[#FF10F0] shadow-lg shadow-[#FF10F0]/50'
-                  : 'bg-[#1a1a2e] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 hover:bg-[#252545]'
+                  ? 'bg-gradient-to-br from-[#FF10F0] to-[#c710c0] text-white border-2 border-[#FF10F0]'
+                  : 'bg-[#1a1a2e] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60'
               }`}
             >
               <Icon name="Users" size={20} className="mr-1 sm:mr-2" />
@@ -1198,10 +1198,10 @@ const Index = () => {
                 setAdminView('withdrawals');
                 loadWithdrawals();
               }}
-              className={`h-12 sm:h-14 text-base sm:text-lg font-bold transition-all ${
+              className={`h-12 sm:h-14 text-base sm:text-lg font-bold ${
                 adminView === 'withdrawals'
-                  ? 'bg-gradient-to-br from-[#00F0FF] to-[#00a8b8] text-white border-2 border-[#00F0FF] shadow-lg shadow-[#00F0FF]/50'
-                  : 'bg-[#1a1a2e] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 hover:bg-[#252545]'
+                  ? 'bg-gradient-to-br from-[#00F0FF] to-[#00a8b8] text-white border-2 border-[#00F0FF]'
+                  : 'bg-[#1a1a2e] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60'
               }`}
             >
               <Icon name="Wallet" size={20} className="mr-1 sm:mr-2" />
@@ -1223,7 +1223,7 @@ const Index = () => {
               {adminUsers.map((u) => (
                 <div
                   key={u.id}
-                  className="bg-gradient-to-br from-[#1a1a2e] to-[#252545] p-3 sm:p-4 rounded-xl border border-[#FF10F0]/20 hover:border-[#FF10F0]/60 hover:shadow-lg hover:shadow-[#FF10F0]/20 transition-all cursor-pointer active:scale-98"
+                  className="bg-gradient-to-br from-[#1a1a2e] to-[#252545] p-3 sm:p-4 rounded-xl border border-[#FF10F0]/20 hover:border-[#FF10F0]/60 cursor-pointer"
                   onClick={() => {
                     setSelectedUser(u);
                     setEditBalance(u.balance.toString());
@@ -1281,7 +1281,7 @@ const Index = () => {
                     withdrawals.map((w) => (
                       <div
                         key={w.id}
-                        className="bg-gradient-to-br from-[#1a1a2e] to-[#252545] p-3 sm:p-4 rounded-xl border border-[#00F0FF]/20 hover:border-[#00F0FF]/50 transition-all shadow-lg"
+                        className="bg-gradient-to-br from-[#1a1a2e] to-[#252545] p-3 sm:p-4 rounded-xl border border-[#00F0FF]/20"
                       >
                         <div className="flex flex-col gap-3">
                           <div className="flex justify-between items-start gap-2">
@@ -1340,7 +1340,7 @@ const Index = () => {
                                 <Button
                                   onClick={() => handleApproveWithdrawal(w.id)}
                                   size="sm"
-                                  className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg shadow-green-600/30 font-bold"
+                                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold"
                                 >
                                   <Icon name="Check" size={16} className="mr-1" />
                                   Одобрить
@@ -1348,7 +1348,7 @@ const Index = () => {
                                 <Button
                                   onClick={() => handleRejectWithdrawal(w.id)}
                                   size="sm"
-                                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-600/30 font-bold"
+                                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold"
                                 >
                                   <Icon name="X" size={16} className="mr-1" />
                                   Отклонить
