@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 
-type Screen = 'home' | 'instructions' | 'signals' | 'referral' | 'auth' | 'admin' | 'admin_user' | 'vip' | 'crashx';
+type Screen = 'home' | 'instructions' | 'signals' | 'referral' | 'auth' | 'admin' | 'admin_user' | 'admin_withdrawals' | 'vip' | 'crashx' | 'withdrawal_method' | 'withdrawal_sbp' | 'withdrawal_card';
 
 interface User {
   id: number;
@@ -17,6 +17,7 @@ interface User {
 
 const AUTH_URL = 'https://functions.poehali.dev/84480352-2061-48c5-b055-98dde5c9eaac';
 const ADMIN_URL = 'https://functions.poehali.dev/c85f181c-7e3a-4ae4-b2ab-510eafdab9d4';
+const WITHDRAWAL_URL = 'https://functions.poehali.dev/70e3feba-e029-403f-90d0-d0d99a410177';
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>('auth');
@@ -41,6 +42,13 @@ const Index = () => {
   const [showVipPasswordModal, setShowVipPasswordModal] = useState(false);
   const [vipPassword, setVipPassword] = useState('');
   const [isVipAuthorized, setIsVipAuthorized] = useState(false);
+  const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [sbpPhone, setSbpPhone] = useState('');
+  const [sbpName, setSbpName] = useState('');
+  const [sbpBank, setSbpBank] = useState('Сбербанк');
+  const [cardNumber, setCardNumber] = useState('');
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [adminView, setAdminView] = useState<'users' | 'withdrawals'>('users');
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -173,7 +181,111 @@ const Index = () => {
   };
 
   const handleWithdraw = () => {
-    window.open('https://t.me/Lusky_bear_bot', '_blank');
+    if (balance < 200) {
+      toast.error('Минимальная сумма вывода 200 рублей');
+      return;
+    }
+    setScreen('withdrawal_method');
+  };
+
+  const handleWithdrawSbp = async () => {
+    if (!sbpPhone || !sbpName || !sbpBank) {
+      toast.error('Заполните все поля');
+      return;
+    }
+
+    const amount = parseFloat(withdrawalAmount);
+    if (isNaN(amount) || amount < 200) {
+      toast.error('Минимальная сумма вывода 200 рублей');
+      return;
+    }
+
+    if (amount > balance) {
+      toast.error('Недостаточно средств');
+      return;
+    }
+
+    try {
+      const response = await fetch(WITHDRAWAL_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id,
+          username: user?.username,
+          amount,
+          method: 'sbp',
+          details: { phone: sbpPhone, name: sbpName, bank: sbpBank }
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(data.message);
+        setBalance(balance - amount);
+        const updatedUser = { ...user!, balance: balance - amount };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setSbpPhone('');
+        setSbpName('');
+        setSbpBank('Сбербанк');
+        setWithdrawalAmount('');
+        setScreen('referral');
+      } else {
+        toast.error(data.error || 'Ошибка создания заявки');
+      }
+    } catch (error) {
+      toast.error('Ошибка сети');
+    }
+  };
+
+  const handleWithdrawCard = async () => {
+    if (!cardNumber) {
+      toast.error('Введите номер карты');
+      return;
+    }
+
+    const amount = parseFloat(withdrawalAmount);
+    if (isNaN(amount) || amount < 200) {
+      toast.error('Минимальная сумма вывода 200 рублей');
+      return;
+    }
+
+    if (amount > balance) {
+      toast.error('Недостаточно средств');
+      return;
+    }
+
+    try {
+      const response = await fetch(WITHDRAWAL_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id,
+          username: user?.username,
+          amount,
+          method: 'card',
+          details: { cardNumber }
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(data.message);
+        setBalance(balance - amount);
+        const updatedUser = { ...user!, balance: balance - amount };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setCardNumber('');
+        setWithdrawalAmount('');
+        setScreen('referral');
+      } else {
+        toast.error(data.error || 'Ошибка создания заявки');
+      }
+    } catch (error) {
+      toast.error('Ошибка сети');
+    }
   };
 
   const copyReferralLink = () => {
@@ -398,6 +510,68 @@ const Index = () => {
       }
     } catch (error) {
       toast.error('Ошибка соединения с сервером');
+    }
+  };
+
+  const loadWithdrawals = async () => {
+    try {
+      const response = await fetch(WITHDRAWAL_URL);
+      const data = await response.json();
+      if (data.withdrawals) {
+        setWithdrawals(data.withdrawals);
+      }
+    } catch (error) {
+      console.error('Error loading withdrawals:', error);
+      toast.error('Ошибка загрузки заявок');
+    }
+  };
+
+  const handleApproveWithdrawal = async (withdrawalId: number) => {
+    try {
+      const response = await fetch(WITHDRAWAL_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          withdrawalId,
+          status: 'approved'
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success('Заявка одобрена');
+        loadWithdrawals();
+      } else {
+        toast.error(data.error || 'Ошибка обработки заявки');
+      }
+    } catch (error) {
+      toast.error('Ошибка сети');
+    }
+  };
+
+  const handleRejectWithdrawal = async (withdrawalId: number) => {
+    try {
+      const response = await fetch(WITHDRAWAL_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          withdrawalId,
+          status: 'rejected'
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success('Заявка отклонена, средства возвращены');
+        loadWithdrawals();
+        loadAdminUsers();
+      } else {
+        toast.error(data.error || 'Ошибка обработки заявки');
+      }
+    } catch (error) {
+      toast.error('Ошибка сети');
     }
   };
 
@@ -1006,10 +1180,40 @@ const Index = () => {
             </Button>
           </div>
 
+          <div className="flex gap-4 mb-6">
+            <Button
+              onClick={() => setAdminView('users')}
+              className={`flex-1 h-12 text-lg font-bold ${
+                adminView === 'users'
+                  ? 'bg-[#FF10F0] text-white border-2 border-[#FF10F0]'
+                  : 'bg-[#1a1a2e] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60'
+              }`}
+            >
+              <Icon name="Users" size={20} className="mr-2" />
+              Пользователи
+            </Button>
+            <Button
+              onClick={() => {
+                setAdminView('withdrawals');
+                loadWithdrawals();
+              }}
+              className={`flex-1 h-12 text-lg font-bold ${
+                adminView === 'withdrawals'
+                  ? 'bg-[#00F0FF] text-white border-2 border-[#00F0FF]'
+                  : 'bg-[#1a1a2e] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60'
+              }`}
+            >
+              <Icon name="Wallet" size={20} className="mr-2" />
+              Выводы
+            </Button>
+          </div>
+
           <Card className="bg-black/60 border border-[#FF10F0]/30 p-4 sm:p-6">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center" style={{ color: '#00F0FF' }}>
-              Список пользователей ({adminUsers.length})
-            </h2>
+            {adminView === 'users' && (
+              <>
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center" style={{ color: '#00F0FF' }}>
+                  Список пользователей ({adminUsers.length})
+                </h2>
 
             <div className="space-y-2">
               {adminUsers.map((u) => (
@@ -1049,6 +1253,85 @@ const Index = () => {
                 </div>
               ))}
             </div>
+              </>
+            )}
+
+            {adminView === 'withdrawals' && (
+              <>
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center" style={{ color: '#00F0FF' }}>
+                  Заявки на вывод ({withdrawals.length})
+                </h2>
+
+                <div className="space-y-3">
+                  {withdrawals.length === 0 ? (
+                    <p className="text-center text-gray-400 py-8">Нет заявок на вывод</p>
+                  ) : (
+                    withdrawals.map((w) => (
+                      <div
+                        key={w.id}
+                        className="bg-[#1a1a2e] p-4 rounded-lg border border-[#00F0FF]/20"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="text-sm font-bold text-[#00F0FF]">{w.username}</p>
+                            <p className="text-xs text-gray-400 mb-2">ID: {w.userId} | Заявка #{w.id}</p>
+                            <p className="text-lg font-bold text-[#FF10F0]">{w.amount} ₽</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Метод: {w.method === 'sbp' ? 'СБП' : 'Карта'}
+                            </p>
+                            {w.method === 'sbp' && (
+                              <div className="text-xs text-gray-300 mt-2 space-y-1">
+                                <p>📱 {w.details.phone}</p>
+                                <p>👤 {w.details.name}</p>
+                                <p>🏦 {w.details.bank}</p>
+                              </div>
+                            )}
+                            {w.method === 'card' && (
+                              <div className="text-xs text-gray-300 mt-2">
+                                <p>💳 {w.details.cardNumber}</p>
+                              </div>
+                            )}
+                            <p className="text-xs text-gray-500 mt-2">
+                              {new Date(w.createdAt).toLocaleString('ru-RU')}
+                            </p>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            {w.status === 'pending' ? (
+                              <>
+                                <Button
+                                  onClick={() => handleApproveWithdrawal(w.id)}
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                  <Icon name="Check" size={16} className="mr-1" />
+                                  Одобрить
+                                </Button>
+                                <Button
+                                  onClick={() => handleRejectWithdrawal(w.id)}
+                                  size="sm"
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                  <Icon name="X" size={16} className="mr-1" />
+                                  Отклонить
+                                </Button>
+                              </>
+                            ) : (
+                              <span className={`text-xs px-3 py-2 rounded text-center font-bold ${
+                                w.status === 'approved' 
+                                  ? 'bg-green-500/20 text-green-400' 
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {w.status === 'approved' ? 'Одобрено' : 'Отклонено'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
           </Card>
         </div>
       </div>
@@ -1150,6 +1433,188 @@ const Index = () => {
                   Разблокировать пользователя
                 </Button>
               )}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === 'withdrawal_method') {
+    return (
+      <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
+        
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6 animate-fade-in py-4">
+          <Button
+            onClick={() => setScreen('referral')}
+            variant="ghost"
+            className="text-[#00F0FF] hover:text-[#FF10F0]"
+          >
+            <Icon name="ArrowLeft" size={20} className="mr-2" />
+            Назад
+          </Button>
+
+          <Card className="bg-black/60 border border-[#FF10F0]/30 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: '#FF10F0' }}>
+              💸 Выберите метод вывода
+            </h2>
+
+            <div className="space-y-4">
+              <div className="mb-4">
+                <label className="text-sm text-[#00F0FF] mb-2 block">Сумма вывода (₽)</label>
+                <Input
+                  type="number"
+                  value={withdrawalAmount}
+                  onChange={(e) => setWithdrawalAmount(e.target.value)}
+                  className="bg-[#1a1a2e] border-[#FF10F0]/30 text-white"
+                  placeholder="Минимум 200 ₽"
+                />
+                <p className="text-xs text-[#00F0FF] mt-1">Доступно: {balance} ₽</p>
+              </div>
+
+              <Button
+                onClick={() => setScreen('withdrawal_sbp')}
+                className="w-full h-16 text-lg bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60"
+              >
+                <Icon name="Smartphone" size={24} className="mr-2" />
+                Вывести по СБП
+              </Button>
+
+              <Button
+                onClick={() => setScreen('withdrawal_card')}
+                className="w-full h-16 text-lg bg-[#1a1a2e] hover:bg-[#252545] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60"
+              >
+                <Icon name="CreditCard" size={24} className="mr-2" />
+                Вывести на карту
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === 'withdrawal_sbp') {
+    return (
+      <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
+        
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6 animate-fade-in py-4">
+          <Button
+            onClick={() => setScreen('withdrawal_method')}
+            variant="ghost"
+            className="text-[#00F0FF] hover:text-[#FF10F0]"
+          >
+            <Icon name="ArrowLeft" size={20} className="mr-2" />
+            Назад
+          </Button>
+
+          <Card className="bg-black/60 border border-[#FF10F0]/30 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: '#FF10F0' }}>
+              📱 Вывод по СБП
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-[#00F0FF] mb-2 block">Номер телефона</label>
+                <Input
+                  type="tel"
+                  value={sbpPhone}
+                  onChange={(e) => setSbpPhone(e.target.value)}
+                  className="bg-[#1a1a2e] border-[#FF10F0]/30 text-white"
+                  placeholder="+79001234567"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-[#00F0FF] mb-2 block">Имя получателя</label>
+                <Input
+                  type="text"
+                  value={sbpName}
+                  onChange={(e) => setSbpName(e.target.value)}
+                  className="bg-[#1a1a2e] border-[#FF10F0]/30 text-white"
+                  placeholder="Иван Иванов"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-[#00F0FF] mb-2 block">Выберите банк</label>
+                <select
+                  value={sbpBank}
+                  onChange={(e) => setSbpBank(e.target.value)}
+                  className="w-full bg-[#1a1a2e] border border-[#FF10F0]/30 text-white rounded-md px-3 py-2 focus:outline-none focus:border-[#FF10F0]"
+                >
+                  <option value="Сбербанк">Сбербанк</option>
+                  <option value="Тинькофф">Тинькофф</option>
+                  <option value="Озон банк">Озон банк</option>
+                  <option value="ВБ банк">ВБ банк</option>
+                  <option value="ВТБ банк">ВТБ банк</option>
+                </select>
+              </div>
+
+              <div className="bg-[#1a1a2e] p-3 rounded-lg border border-[#FF10F0]/20">
+                <p className="text-sm text-[#00F0FF]">Сумма: <span className="font-bold">{withdrawalAmount || '0'} ₽</span></p>
+              </div>
+
+              <Button
+                onClick={handleWithdrawSbp}
+                className="w-full h-12 bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60"
+              >
+                <Icon name="Send" size={20} className="mr-2" />
+                Вывести
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === 'withdrawal_card') {
+    return (
+      <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
+        
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6 animate-fade-in py-4">
+          <Button
+            onClick={() => setScreen('withdrawal_method')}
+            variant="ghost"
+            className="text-[#00F0FF] hover:text-[#FF10F0]"
+          >
+            <Icon name="ArrowLeft" size={20} className="mr-2" />
+            Назад
+          </Button>
+
+          <Card className="bg-black/60 border border-[#FF10F0]/30 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: '#FF10F0' }}>
+              💳 Вывод на карту
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-[#00F0FF] mb-2 block">Номер карты</label>
+                <Input
+                  type="text"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  className="bg-[#1a1a2e] border-[#FF10F0]/30 text-white"
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                />
+              </div>
+
+              <div className="bg-[#1a1a2e] p-3 rounded-lg border border-[#FF10F0]/20">
+                <p className="text-sm text-[#00F0FF]">Сумма: <span className="font-bold">{withdrawalAmount || '0'} ₽</span></p>
+              </div>
+
+              <Button
+                onClick={handleWithdrawCard}
+                className="w-full h-12 bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60"
+              >
+                <Icon name="Send" size={20} className="mr-2" />
+                Вывести
+              </Button>
             </div>
           </Card>
         </div>
