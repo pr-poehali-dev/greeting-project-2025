@@ -215,10 +215,16 @@ const Index = () => {
     if (!user) return;
     
     try {
+      console.log('Sending VIP payment request:', {
+        action: 'create_request',
+        userId: user.id,
+        screenshotUrl: vipPaymentScreenshot
+      });
+      
       const response = await fetch(VIP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.dumps({
+        body: JSON.stringify({
           action: 'create_request',
           userId: user.id,
           screenshotUrl: vipPaymentScreenshot
@@ -226,6 +232,7 @@ const Index = () => {
       });
       
       const data = await response.json();
+      console.log('VIP payment response:', { status: response.status, data });
       
       if (response.ok && data.success) {
         toast.success(data.message);
@@ -233,10 +240,11 @@ const Index = () => {
         setVipPaymentScreenshot('');
         setVipRequestStatus('pending');
       } else {
-        toast.error(data.error || 'Ошибка отправки заявки');
+        toast.error('❌ ' + (data.error || 'Ошибка отправки заявки'));
       }
     } catch (error) {
-      toast.error('Ошибка сети');
+      console.error('Error submitting VIP request:', error);
+      toast.error(`❌ Ошибка отправки заявки: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     }
   };
 
@@ -300,6 +308,33 @@ const Index = () => {
       }
     } catch (error) {
       toast.error('Ошибка сети');
+    }
+  };
+
+  const handleDeleteVip = async (requestId: number) => {
+    if (!confirm('Удалить эту VIP-заявку?')) return;
+    
+    try {
+      const response = await fetch(VIP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'delete',
+          requestId,
+          adminId: 1
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        toast.success('✅ ' + data.message);
+        loadVipRequests();
+      } else {
+        toast.error('❌ ' + (data.error || 'Ошибка удаления'));
+      }
+    } catch (error) {
+      toast.error('❌ Ошибка сети');
     }
   };
 
@@ -1530,7 +1565,8 @@ const Index = () => {
                               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold"
                             >
                               <Icon name="Check" size={16} className="mr-1" />
-                              Одобрить (30 дней)
+                              <span className="hidden sm:inline">Одобрить (30 дней)</span>
+                              <span className="sm:hidden">✅ Одобрить</span>
                             </Button>
                             <Button
                               onClick={() => handleRejectVip(req.id)}
@@ -1538,7 +1574,15 @@ const Index = () => {
                               className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold"
                             >
                               <Icon name="X" size={16} className="mr-1" />
-                              Отклонить
+                              <span className="hidden sm:inline">Отклонить</span>
+                              <span className="sm:hidden">❌</span>
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteVip(req.id)}
+                              size="sm"
+                              className="bg-gray-700 hover:bg-gray-800 text-white"
+                            >
+                              <Icon name="Trash2" size={16} />
                             </Button>
                           </div>
                         </div>

@@ -223,6 +223,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }),
                     'isBase64Encoded': False
                 }
+            
+            elif action == 'delete':
+                request_id = body_data.get('requestId')
+                admin_id = body_data.get('adminId')
+                
+                if not request_id or not admin_id:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'ID заявки и админа обязательны'}),
+                        'isBase64Encoded': False
+                    }
+                
+                cur.execute(
+                    "DELETE FROM vip_requests WHERE id = %s RETURNING id",
+                    (request_id,)
+                )
+                result = cur.fetchone()
+                conn.commit()
+                
+                if not result:
+                    return {
+                        'statusCode': 404,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Заявка не найдена'}),
+                        'isBase64Encoded': False
+                    }
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'message': 'Заявка удалена'
+                    }),
+                    'isBase64Encoded': False
+                }
         
         elif method == 'GET':
             query_params = event.get('queryStringParameters') or {}
