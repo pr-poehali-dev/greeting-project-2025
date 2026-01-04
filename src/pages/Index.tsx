@@ -870,6 +870,18 @@ const Index = () => {
                   <p className="text-gray-300 text-sm sm:text-base mb-3">
                     Стоимость: 8$ / месяц
                   </p>
+                  
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-3">
+                    <div className="flex items-start gap-2">
+                      <Icon name="AlertTriangle" size={18} className="text-red-400 flex-shrink-0 mt-0.5" />
+                      <div className="text-xs text-red-300">
+                        <p className="font-bold mb-1">⚠️ Важно:</p>
+                        <p className="mb-1">• Переводите РОВНО 8 USDT</p>
+                        <p>• Только через сеть The Open Network (TON)</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="bg-black/40 p-3 rounded-lg border border-[#9b87f5]/30">
                     <p className="text-xs text-gray-400 mb-2">Отправьте оплату на кошелек:</p>
                     <p className="text-xs text-[#00F0FF] font-mono break-all">{CRYPTO_WALLET}</p>
