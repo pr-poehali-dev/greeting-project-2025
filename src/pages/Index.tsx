@@ -912,6 +912,15 @@ const Index = () => {
                   <p className="text-xs text-gray-400">Загрузите скриншот в любой сервис (imgur.com, imgbb.com) и вставьте ссылку</p>
                 </div>
 
+                <div className="bg-[#9b87f5]/10 border border-[#9b87f5]/30 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <Icon name="Clock" size={16} className="text-[#9b87f5] flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-gray-300">
+                      Проверка заявки занимает не более 15 минут
+                    </p>
+                  </div>
+                </div>
+
                 <div className="flex gap-3 sm:gap-4">
                   <Button
                     onClick={() => {
