@@ -868,7 +868,7 @@ const Index = () => {
                     VIP Доступ
                   </h2>
                   <p className="text-gray-300 text-sm sm:text-base mb-3">
-                    Стоимость: 500 ₽ / месяц
+                    Стоимость: 8$ / месяц
                   </p>
                   <div className="bg-black/40 p-3 rounded-lg border border-[#9b87f5]/30">
                     <p className="text-xs text-gray-400 mb-2">Отправьте оплату на кошелек:</p>
