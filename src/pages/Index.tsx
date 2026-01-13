@@ -1066,10 +1066,15 @@ const Index = () => {
             </Button>
 
             <Button
-              onClick={() => setScreen('signals')}
+              onClick={() => {
+                if (!hasClickedRegister) {
+                  toast.error('⚠️ Сначала нажмите "Зарегистрироваться", а затем переходите к сигналам!');
+                } else {
+                  setScreen('signals');
+                }
+              }}
               size="lg"
-              disabled={!hasClickedRegister}
-              className="flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 h-14 sm:h-16 text-lg sm:text-xl font-bold bg-[#1a1a2e] hover:bg-[#252545] text-[#00F0FF] border-2 border-[#00F0FF]/30 hover:border-[#00F0FF]/60 transition-all"
             >
               <Icon name="Play" size={24} className="mr-2" />
               К сигналам
