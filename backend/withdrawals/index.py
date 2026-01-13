@@ -34,6 +34,14 @@ def handler(event: dict, context) -> dict:
     
     try:
         if method == 'GET':
+            # Удаляем обработанные заявки на вывод старше 7 дней
+            cursor.execute("""
+                DELETE FROM t_p45110186_greeting_project_202.withdrawals
+                WHERE status IN ('approved', 'rejected')
+                AND processed_at < CURRENT_TIMESTAMP - INTERVAL '7 days'
+            """)
+            conn.commit()
+            
             cursor.execute("""
                 SELECT id, user_id, username, amount, method, details, status, 
                        created_at, processed_at

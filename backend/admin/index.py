@@ -217,6 +217,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
         
         elif method == 'GET':
+            # Удаляем заблокированных пользователей старше 7 дней
+            cur.execute(
+                """
+                DELETE FROM users 
+                WHERE is_banned = TRUE 
+                AND banned_at < CURRENT_TIMESTAMP - INTERVAL '7 days'
+                """
+            )
+            conn.commit()
+            
             cur.execute(
                 "SELECT id, username, balance, referral_count, is_banned, ban_reason, created_at FROM users ORDER BY created_at DESC"
             )
