@@ -440,7 +440,7 @@ const Index = () => {
   };
 
   const handleRegister = () => {
-    window.open('https://t.me/K_Elite_Bot/app?startapp=eHd1PTE3MDQwMjgzNzcmbT1uZXRsbzU1NSZjPWRlZmF1bHQ', '_blank');
+    window.open('https://t.me/LB_Min_bot/app?startapp=eHd1PTE3MDQwMjgzNzcmbT1uZXRsbzU1NSZjPWRlZmF1bHQ', '_blank');
   };
 
   const handleAuth = async () => {
