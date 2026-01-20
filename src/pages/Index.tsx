@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
+import { TelegramLoginButton } from '@/components/extensions/telegram-bot/TelegramLoginButton';
+import { useTelegramAuth } from '@/components/extensions/telegram-bot/useTelegramAuth';
 
 type Screen = 'home' | 'instructions' | 'signals' | 'referral' | 'auth' | 'admin' | 'admin_user' | 'admin_withdrawals' | 'admin_vip' | 'vip' | 'vip_payment' | 'crashx' | 'withdrawal_crypto_select' | 'withdrawal_crypto_usdt' | 'withdrawal_crypto_ton' | 'withdrawal_crypto_confirm';
 
@@ -20,8 +22,18 @@ const ADMIN_URL = 'https://functions.poehali.dev/c85f181c-7e3a-4ae4-b2ab-510eafd
 const WITHDRAWAL_URL = 'https://functions.poehali.dev/70e3feba-e029-403f-90d0-d0d99a410177';
 const VIP_URL = 'https://functions.poehali.dev/6aa4ac1b-7cc2-4b00-b3ed-36a090f42772';
 const CRYPTO_WALLET = 'UQAdowLWZaOAssDcVX-CbhUl_ydb9wSJON7EPorQEYBqE4UQ';
+const TELEGRAM_AUTH_URL = 'https://functions.poehali.dev/37376f8d-96d9-4835-abdc-841278f787be';
 
 const Index = () => {
+  const telegramAuth = useTelegramAuth({
+    apiUrls: {
+      callback: `${TELEGRAM_AUTH_URL}?action=callback`,
+      refresh: `${TELEGRAM_AUTH_URL}?action=refresh`,
+      logout: `${TELEGRAM_AUTH_URL}?action=logout`,
+    },
+    botUsername: 'Lusky_bear_bot',
+  });
+
   const [screen, setScreen] = useState<Screen>('auth');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
@@ -822,6 +834,18 @@ const Index = () => {
               >
                 {authMode === 'login' ? 'Войти' : 'Зарегистрироваться'}
               </Button>
+
+              <div className="relative flex items-center gap-3 my-4">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#FF10F0]/30 to-transparent"></div>
+                <span className="text-gray-400 text-xs sm:text-sm">или</span>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#FF10F0]/30 to-transparent"></div>
+              </div>
+
+              <TelegramLoginButton
+                onClick={telegramAuth.login}
+                isLoading={telegramAuth.isLoading}
+                className="w-full h-12 sm:h-14 text-base sm:text-lg"
+              />
 
               <div className="text-center pt-1">
                 <button
