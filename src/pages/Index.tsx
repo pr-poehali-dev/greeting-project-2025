@@ -1187,7 +1187,34 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="mt-6 pt-6">
+            <div className="mt-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-5 border-2 border-purple-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Icon name="Link" size={20} className="text-purple-600" />
+                <h3 className="text-gray-800 font-bold text-lg">Ваша реферальная ссылка</h3>
+              </div>
+              <div className="bg-white rounded-xl p-3 border border-purple-300 flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={`https://cubistime.ru?ref=${user?.id || 0}`}
+                  className="flex-1 bg-transparent border-none outline-none text-purple-700 font-mono text-sm"
+                />
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://cubistime.ru?ref=${user?.id || 0}`);
+                    toast.success('✅ Ссылка скопирована!');
+                  }}
+                  size="sm"
+                  className="bg-purple-600 hover:bg-purple-700 text-white border-0 px-4 py-2 rounded-lg transition-all"
+                >
+                  <Icon name="Copy" size={16} className="mr-1" />
+                  Копировать
+                </Button>
+              </div>
+              <p className="text-gray-600 text-xs mt-2">Отправьте эту ссылку друзьям для получения дохода</p>
+            </div>
+
+            <div className="mt-4">
               <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-6 text-center shadow-lg">
                 <p className="text-white text-xl font-semibold mb-2">Доход:</p>
                 <p className="text-white text-4xl font-black">0 ₽</p>
