@@ -1147,7 +1147,7 @@ const Index = () => {
       <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f2e] via-[#0f1419] to-[#1a0f2e]" />
         
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-fade-in py-4">
+        <div className="relative z-10 max-w-2xl mx-auto space-y-4 animate-fade-in py-4">
           <Button
             onClick={() => setScreen('home')}
             variant="ghost"
@@ -1157,112 +1157,43 @@ const Index = () => {
             Назад
           </Button>
 
-          <Card className="bg-black/60 border border-[#FF10F0]/30 p-4 sm:p-8">
-              <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
-                <div className="flex flex-row justify-around items-center gap-4">
-                  <div className="text-center">
-                    <p className="text-xs sm:text-sm text-[#00F0FF] mb-1">Ваш баланс</p>
-                    <p className="text-3xl sm:text-4xl font-black" style={{ color: '#FF10F0' }}>
-                      {balance} USDT
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs sm:text-sm text-[#00F0FF] mb-1">Рефералов</p>
-                    <p className="text-3xl sm:text-4xl font-black" style={{ color: '#00F0FF' }}>
-                      {referralCount}
-                    </p>
-                  </div>
+          <Card className="bg-white/95 backdrop-blur-sm border-0 rounded-3xl p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-purple-600">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Icon name="Clock" size={24} className="text-purple-600" />
                 </div>
-
-                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 sm:p-4">
-                  <div className="flex items-start gap-2">
-                    <Icon name="AlertTriangle" size={20} className="text-yellow-500 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs sm:text-sm text-yellow-200">
-                      <p className="font-bold mb-1">⚠️ Внимание!</p>
-                      <p className="mb-2">Баланс и количество рефералов обновляются автоматически раз в 6 часов.</p>
-                      <p>Если баланс не обновляется, выйдите из аккаунта и зайдите назад. <strong>Сохраняйте свои логин и пароль!</strong></p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <Button
-                    onClick={handleWithdraw}
-                    className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border-2 border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all px-6 py-2"
-                  >
-                    <Icon name="Wallet" size={20} className="mr-2" />
-                    Вывести
-                  </Button>
-                  <p className="text-xs text-[#00F0FF] mt-2">Минимальная сумма вывода: 10 USDT</p>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">За всё время</h2>
+                  <div className="h-1 w-32 bg-gradient-to-r from-purple-600 to-purple-400 rounded-full mt-1"></div>
                 </div>
               </div>
+            </div>
 
-              <h2 className="text-xl sm:text-3xl font-black mb-4 sm:mb-6 text-center" style={{ color: '#FF10F0' }}>
-                ⭐ Реферальная программа Lusky Bear
-              </h2>
-
-              {user?.referralCode && (
-                <div className="bg-black/60 p-3 rounded-lg border border-[#FF10F0]/30 mb-6">
-                  <h3 className="text-base font-bold text-center mb-2" style={{ color: '#FF10F0' }}>
-                    Ваша реферальная ссылка
-                  </h3>
-                  <p className="text-xs text-center text-[#00F0FF] mb-2">
-                    Отправьте эту ссылку другу для получения рефералов
-                  </p>
-                  <div className="bg-[#1a1a2e] p-2 rounded-lg border border-[#FF10F0]/30 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <input
-                      type="text"
-                      readOnly
-                      value={`https://t.me/LB_Min_bot/app?startapp=eHd1PTE3MDQwMjgzNzcmbT1uZXRsbzU1NSZjPWRlZmF1bHQ`}
-                      className="flex-1 bg-transparent border-none outline-none text-[#00F0FF] font-mono text-xs px-2 py-1"
-                    />
-                    <Button
-                      onClick={copyReferralLink}
-                      size="sm"
-                      className="bg-[#1a1a2e] hover:bg-[#252545] text-[#FF10F0] border border-[#FF10F0]/30 hover:border-[#FF10F0]/60 transition-all text-xs"
-                    >
-                      <Icon name="Copy" size={14} className="mr-1" />
-                      Копировать
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-4 sm:space-y-6 text-sm sm:text-base mb-6 sm:mb-8">
-                <p className="text-center">
-                  Зарабатывайте по <span className="text-[#FF10F0] font-bold">20 USDT</span> за приглашённого человека и его траты в казино Lusky Bear
-                </p>
-
-                <div className="bg-black/60 p-4 sm:p-6 rounded-lg border border-[#9b87f5]/30">
-                  <h3 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4 text-[#00F0FF]">💰 Сколько вы получаете</h3>
-                  <p>🥳 Вы получаете по <strong className="text-[#FF10F0]">20 USDT</strong> за каждого приглашённого, который пополнил баланс на минимальную сумму и получил хотя бы 2 сигнала.</p>
-                  <p className="mt-3 sm:mt-4">Ваш приглашённый получает <strong className="text-[#00F0FF]">360% бонусом</strong> за первое пополнение баланса и бесплатные сигналы в казино Lusky Bear.</p>
-                </div>
-
-                <div className="bg-black/60 p-4 sm:p-6 rounded-lg border border-[#9b87f5]/30">
-                  <h3 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4 text-[#00F0FF]">🔍 Как это работает</h3>
-                  <ol className="space-y-2 list-decimal list-inside">
-                    <li>Вы отправляете человеку свою реферальную ссылку.</li>
-                    <li>Он переходит по ней, выполняет условия, пополняет баланс и получает точные сигналы.</li>
-                    <li>Ваш баланс пополняется на 20 USDT.</li>
-                    <li>Всё понятно и просто 🎉</li>
-                  </ol>
-                </div>
-
-                <div className="bg-black/60 p-4 sm:p-6 rounded-lg border border-[#9b87f5]/30">
-                  <h3 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4 text-[#00F0FF]">📌 Основные условия</h3>
-                  <div className="space-y-2 sm:space-y-3">
-                    <p><strong>1️⃣</strong> Выплаты по реферальной программе осуществляются раз в неделю, за этот срок все ваши приглашённые пользователи закрепляются за вами.</p>
-                    <p><strong>2️⃣</strong> Только новые пользователи. Если приглашённый пользователь уже играл в казино Lusky Bear, то он не будет отображаться.</p>
-                    <p><strong>3️⃣</strong> Не нарушайте условия реферальной программы, не накручивайте трафик — только живые пользователи и новые аккаунты. За нарушение соглашения следует аннулирование баланса и блокировка пользователя.</p>
-                  </div>
-                </div>
+            <div className="space-y-0">
+              <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                <span className="text-gray-700 text-lg font-medium">Переходы:</span>
+                <span className="text-gray-800 text-xl font-bold">0</span>
               </div>
 
-              <p className="text-xs text-center text-[#00F0FF]">
-                Чтобы вывести баланс, напишите администратору и предоставьте скриншоты
-              </p>
-            </Card>
+              <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                <span className="text-gray-700 text-lg font-medium">Регистрации:</span>
+                <span className="text-gray-800 text-xl font-bold">0</span>
+              </div>
+
+              <div className="flex justify-between items-center py-4 border-b border-gray-200">
+                <span className="text-gray-700 text-lg font-medium">Первые депозиты:</span>
+                <span className="text-gray-800 text-xl font-bold">0</span>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6">
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-6 text-center shadow-lg">
+                <p className="text-white text-xl font-semibold mb-2">Доход:</p>
+                <p className="text-white text-4xl font-black">0 ₽</p>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     );
