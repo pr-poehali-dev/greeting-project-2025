@@ -61,6 +61,10 @@ const Index = () => {
   const [referralDeposits, setReferralDeposits] = useState(0);
   const [showReferralMenu, setShowReferralMenu] = useState(false);
   const [referralView, setReferralView] = useState<'main' | 'withdrawal'>('main');
+  const [refWithdrawalCrypto, setRefWithdrawalCrypto] = useState<'USDT' | 'TON' | ''>('');
+  const [refWithdrawalNetwork, setRefWithdrawalNetwork] = useState<'TON' | 'TRC20' | 'SPL' | ''>('');
+  const [refWithdrawalWallet, setRefWithdrawalWallet] = useState('');
+  const [refWithdrawalAmount, setRefWithdrawalAmount] = useState('');
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
@@ -1329,8 +1333,125 @@ const Index = () => {
             )}
 
             {referralView === 'withdrawal' && (
-              <div className="mt-4">
-                <p className="text-gray-600 text-center py-8">Страница вывода в разработке</p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Способ вывода</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => {
+                        setRefWithdrawalCrypto('USDT');
+                        setRefWithdrawalNetwork('');
+                      }}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        refWithdrawalCrypto === 'USDT'
+                          ? 'border-purple-600 bg-purple-50 text-purple-700 font-bold'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                      }`}
+                    >
+                      USDT
+                    </button>
+                    <button
+                      onClick={() => {
+                        setRefWithdrawalCrypto('TON');
+                        setRefWithdrawalNetwork('');
+                      }}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        refWithdrawalCrypto === 'TON'
+                          ? 'border-purple-600 bg-purple-50 text-purple-700 font-bold'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                      }`}
+                    >
+                      TON
+                    </button>
+                  </div>
+                </div>
+
+                {refWithdrawalCrypto === 'USDT' && (
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Сеть</label>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setRefWithdrawalNetwork('TON')}
+                        className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                          refWithdrawalNetwork === 'TON'
+                            ? 'border-purple-600 bg-purple-50 text-purple-700 font-semibold'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                        }`}
+                      >
+                        The Open Network (TON)
+                      </button>
+                      <button
+                        onClick={() => setRefWithdrawalNetwork('TRC20')}
+                        className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                          refWithdrawalNetwork === 'TRC20'
+                            ? 'border-purple-600 bg-purple-50 text-purple-700 font-semibold'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                        }`}
+                      >
+                        Tron (TRC20)
+                      </button>
+                      <button
+                        onClick={() => setRefWithdrawalNetwork('SPL')}
+                        className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
+                          refWithdrawalNetwork === 'SPL'
+                            ? 'border-purple-600 bg-purple-50 text-purple-700 font-semibold'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                        }`}
+                      >
+                        Solana (SPL)
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {refWithdrawalCrypto && (
+                  <>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">
+                        Сумма вывода <span className="text-gray-500 font-normal text-sm">(минимум 10$)</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={refWithdrawalAmount}
+                        onChange={(e) => setRefWithdrawalAmount(e.target.value)}
+                        placeholder="Введите сумму в $"
+                        className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-purple-600 focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base">Адрес кошелька</label>
+                      <input
+                        type="text"
+                        value={refWithdrawalWallet}
+                        onChange={(e) => setRefWithdrawalWallet(e.target.value)}
+                        placeholder="Введите адрес кошелька"
+                        className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-purple-600 focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    <Button
+                      onClick={() => {
+                        if (!refWithdrawalAmount || parseFloat(refWithdrawalAmount) < 10) {
+                          toast.error('Минимальная сумма вывода 10$');
+                          return;
+                        }
+                        if (refWithdrawalCrypto === 'USDT' && !refWithdrawalNetwork) {
+                          toast.error('Выберите сеть');
+                          return;
+                        }
+                        if (!refWithdrawalWallet) {
+                          toast.error('Введите адрес кошелька');
+                          return;
+                        }
+                        toast.success('Заявка на вывод отправлена!');
+                      }}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-bold text-lg"
+                    >
+                      Вывести средства
+                    </Button>
+                  </>
+                )}
               </div>
             )}
           </Card>
