@@ -1283,7 +1283,7 @@ const Index = () => {
             <div className="mt-3 sm:mt-4">
               <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-lg">
                 <p className="text-white text-base sm:text-xl font-semibold mb-1 sm:mb-2">Доход:</p>
-                <p className="text-white text-3xl sm:text-4xl font-black">0 ₽</p>
+                <p className="text-white text-3xl sm:text-4xl font-black">{referralRegistrations * 15} ₽</p>
               </div>
             </div>
           </Card>
