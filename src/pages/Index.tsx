@@ -1233,7 +1233,7 @@ const Index = () => {
           </Button>
 
           <Card className="bg-white/95 backdrop-blur-sm border-0 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl overflow-hidden">
-            <div className="flex items-center mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-purple-600">
+            <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-purple-600">
               <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <Icon name="Clock" size={20} className="sm:w-6 sm:h-6 text-purple-600" />
@@ -1243,6 +1243,9 @@ const Index = () => {
                   <div className="h-1 w-20 sm:w-32 bg-gradient-to-r from-purple-600 to-purple-400 rounded-full mt-1"></div>
                 </div>
               </div>
+              <button className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <Icon name="MoreVertical" size={20} className="text-gray-600" />
+              </button>
             </div>
 
             <div className="space-y-0">
