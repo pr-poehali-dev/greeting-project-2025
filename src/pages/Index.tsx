@@ -1247,14 +1247,9 @@ const Index = () => {
                 <span className="text-gray-800 text-lg sm:text-xl font-bold">{referralClicks}</span>
               </div>
 
-              <div className="flex justify-between items-center py-3 sm:py-4 border-b border-gray-200 gap-2">
+              <div className="flex justify-between items-center py-3 sm:py-4 gap-2">
                 <span className="text-gray-700 text-sm sm:text-lg font-medium">Регистрации:</span>
                 <span className="text-gray-800 text-lg sm:text-xl font-bold">{referralRegistrations}</span>
-              </div>
-
-              <div className="flex justify-between items-center py-3 sm:py-4 border-b border-gray-200 gap-2">
-                <span className="text-gray-700 text-sm sm:text-lg font-medium whitespace-nowrap">Первые депозиты:</span>
-                <span className="text-gray-800 text-lg sm:text-xl font-bold">{referralDeposits}</span>
               </div>
             </div>
 
